@@ -1,7 +1,6 @@
 import { File } from "../models/File.js"
 import { Folder } from "../models/Folder.js"
 
-
 export const createFolder = async () => {
 
     try {
@@ -84,7 +83,7 @@ export const readFoldersOfParentFolder = async () => {
 
         return res.json({
             status: false,
-            message: "Something went wrong, please reload the page"
+            message: "Something went wrong loading folders, please reload the page"
         })
     }
 }

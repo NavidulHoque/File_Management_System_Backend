@@ -94,7 +94,11 @@ export const readFileByID = async () => {
     const { id } = req.params
 
     try {
-        const file = await File.findById(id)
+        let file = await File.findById(id)
+
+        const {name, data, extension} = file
+
+        file = {name, data, extension}
 
         return res.json({
             status: true,
@@ -138,7 +142,7 @@ export const readFilesOfParentFolder = async () => {
 
         return res.json({
             status: false,
-            message: "Something went wrong, please reload the page"
+            message: "Something went wrong loading files, please reload the page"
         })
     }
 }
