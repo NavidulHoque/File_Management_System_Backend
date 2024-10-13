@@ -7,29 +7,21 @@ const FolderSchema = new Schema({
     name: {
         type: String,
         required: [true, 'Folder name is required'],
+        minLength: [4, "Folder name should be at least 4 characters long"],
+        minLength: [15, "Folder name cannot exceed 15 characters"],
         trim: true
     },
 
     parent: {
-        type: String,
-        default: "root"
+        type: mongoose.Schema.Types.Mixed, // Allows both ObjectId and "root"
+        ref: 'Folder',
+        required: [true, "Parent is required"]
     },
 
     userID: {
         type: mongoose.Schema.Types.ObjectId,
-        required: [true, 'UserID is required'],
-        ref: 'User'
-    },
-
-    childrenFolders: {
-        type: [String],
-        default: []
-    },
-
-    childrenFiles: {
-        type: [mongoose.Schema.Types.ObjectId],
-        default: [],
-        ref: 'File'
+        ref: 'User',
+        required: [true, 'UserID is required']
     }
 
 }, { timestamps: true })

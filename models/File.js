@@ -6,12 +6,14 @@ const FileSchema = new Schema({
 
     data: {
         type: String,
+        default: "",
         trim: true
     },
 
     extension: {
         type: String,
-        required: [true, 'Extension is required'],
+        default: "txt",
+        maxLength: [8, "Extension cannot exceed 8 characters"],
         trim: true
     },
 
@@ -19,19 +21,21 @@ const FileSchema = new Schema({
         type: String,
         required: [true, 'File name is required'],
         trim: true,
+        minLength: [4, "File name should be at least 4 characters long"],
+        maxLength: [15, "File name cannot exceed 15 characters"],
         match: [/^\S+\.[a-zA-Z]+$/, 'Enter a valid file name']
     },
 
     parent: {
         type: mongoose.Schema.Types.Mixed, // Allows both ObjectId and "root"
         ref: 'Folder',
-        default: "root"
+        required: [true, "Parent is required"]
     },
 
     userID: {
         type: mongoose.Schema.Types.ObjectId,
-        required: [true, 'UserID is required'],
-        ref: 'User'
+        ref: 'User',
+        required: [true, 'UserID is required']
     }
 
 }, { timestamps: true })

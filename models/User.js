@@ -9,10 +9,9 @@ const UserSchema = new Schema({
         type: String,
         required: [true, 'Username is required'],
         unique: [true, "Username already exists"],
-        trim: true,
         minLength: [5, 'Username must be at least 5 characters long'],
         maxLength: [15, 'Username cannot exceed 15 characters'],
-        match: [/^[a-zA-Z0-9]+$/, 'Username can only contain alphanumeric characters (no special characters and space are allowed)'],
+        match: [/^[a-zA-Z0-9]+$/, 'Username can only contain alphanumeric characters (no special characters and space are allowed)']
     },
 
     email: {

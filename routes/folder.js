@@ -8,6 +8,6 @@ router.post("/create", protect, createFolder)
 
 router.delete("/:id", protect, deleteFolder)
 
-router.get("/:folderID", protect, readFoldersOfParentFolder)
+router.get("/:id", protect, readFoldersOfParentFolder)
 
 export default router
