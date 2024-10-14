@@ -7,17 +7,23 @@ export const createFile = async () => {
         const newFile = new File(
             {
                 extension: req.body.extension,
-                name: req.body.name,
+                basename: req.body.basename,
+                fullname: req.body.fullname,
                 parent: req.body.parent,
                 userID: req.body.userID
             }
         )
 
-        await newFile.save()
+        const savedFile = await newFile.save()
+
+        const {fullname, _id, updatedAt} = savedFile
+
+        const file = {id: _id, name: fullname, updatedAt}
 
         return res.json({
             status: true,
-            message: "File created successfully"
+            message: "File created successfully", 
+            file
         })
 
     }
@@ -37,15 +43,15 @@ export const updateFile = async () => {
     const { id } = req.useParams
 
     try {
-        const updateFile = await File.findByIdAndUpdate(id, {
+        const updatedFile = await File.findByIdAndUpdate(id, {
 
             data: req.body.data
 
         }, { new: true })
 
-        const { data, extension, name, parent, updatedAt } = updateFile
+        const { data, extension, fullname } = updatedFile
 
-        const file = { data, extension, name, parent, updatedAt }
+        const file = {name: fullname, data, extension}
 
         return res.json({
             status: true,
@@ -96,9 +102,9 @@ export const readFileByID = async () => {
     try {
         let file = await File.findById(id)
 
-        const {name, data, extension} = file
+        const {fullname, data, extension} = file
 
-        file = {name, data, extension}
+        file = {name: fullname, data, extension}
 
         return res.json({
             status: true,
@@ -122,19 +128,28 @@ export const readFilesOfParentFolder = async () => {
 
     try {
 
-        const files = await File.find({ parent: folderID })
+        let files = await File.find({ parent: folderID })
 
         if (files.length === 0) {
             return res.json({
-                status: false
+                status: false,
+                message: "empty"
             })
         }
+
+        files = files.map(file => {
+
+            const {_id, fullname, updatedAt} = file
+
+            const modifiedFile = {id: _id, name: fullname, updatedAt}
+
+            return modifiedFile
+        })
 
         return res.json({
             status: true,
             files
         })
-
     }
 
     catch (error) {

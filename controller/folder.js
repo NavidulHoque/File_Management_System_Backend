@@ -64,13 +64,23 @@ export const readFoldersOfParentFolder = async () => {
     const {id} = req.params
 
     try {
-        const folders = await Folder.find({ parent: id })
+        let folders = await Folder.find({ parent: id })
 
         if (folders.length === 0) {
             return res.json({
-                status: false
+                status: false,
+                message: "empty"
             })
         }
+
+        folders = folders.map(folder => {
+
+            const {_id, name, updatedAt, parent} = folder
+
+            const modifiedFolder = {id: _id, name, parent, updatedAt}
+
+            return modifiedFolder
+        })
 
         return res.json({
             status: true,
