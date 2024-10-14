@@ -12,11 +12,16 @@ export const createFolder = async () => {
             }
         )
 
-        await newFolder.save()
+        const savedFolder = await newFolder.save()
+
+        const {_id, name, updatedAt} = savedFolder
+
+        const folder = {id: _id, name, updatedAt}
 
         return res.json({
             status: true,
-            message: "Folder created successfully"
+            message: "Folder created successfully",
+            folder
         })
     }
 
