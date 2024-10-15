@@ -3,36 +3,30 @@ import { File } from '../models/File.js';
 
 export const createFile = async (req, res) => {
 
+    const { extension, basename, fullname, parent, userID } = req.body
+
     try {
 
-        const newFile = new File(
-            {
-                extension: req.body.extension,
-                basename: req.body.basename,
-                fullname: req.body.fullname,
-                parent: req.body.parent,
-                userID: req.body.userID
-            }
-        )
+        const newFile = new File({ extension, basename, fullname, parent, userID })
 
-        const isDuplicate = await checkFile(basename)
+        const isDuplicate = await checkFile(fullname, parent, userID)
 
         if (isDuplicate) {
             return res.json({
                 status: false,
-                message: isDuplicate,
+                message: isDuplicate
             })
         }
 
         const savedFile = await newFile.save()
 
-        const {fullname, _id, updatedAt} = savedFile
+        const { _id, updatedAt } = savedFile
 
-        const file = {id: _id, name: fullname, updatedAt}
+        const file = { id: _id, name: fullname, updatedAt }
 
         return res.json({
             status: true,
-            message: "File created successfully", 
+            message: "File created successfully",
             file
         })
     }
@@ -49,7 +43,7 @@ export const createFile = async (req, res) => {
 
 export const updateFile = async (req, res) => {
 
-    const { id } = req.useParams
+    const { id } = req.params
 
     try {
         const updatedFile = await File.findByIdAndUpdate(id, {
@@ -58,9 +52,9 @@ export const updateFile = async (req, res) => {
 
         }, { new: true })
 
-        const { data, extension, fullname } = updatedFile
+        const { data, extension, fullname, parent } = updatedFile
 
-        const file = {name: fullname, data, extension}
+        const file = { name: fullname, data, extension, parent }
 
         return res.json({
             status: true,
@@ -81,15 +75,16 @@ export const updateFile = async (req, res) => {
 
 export const deleteFile = async (req, res) => {
 
-    const { id } = req.useParams
+    const { id } = req.params
 
     try {
 
-        await File.findByIdAndDelete(id)
+        const deletedFile = await File.findByIdAndDelete(id)
 
         return res.json({
             status: true,
-            message: "File successfully deleted!"
+            message: "File successfully deleted!",
+            file: {id: deletedFile._id}
         })
     }
 
@@ -111,9 +106,9 @@ export const readFileByID = async (req, res) => {
     try {
         let file = await File.findById(id)
 
-        const {fullname, data, extension} = file
+        const { fullname, data, extension, parent } = file
 
-        file = {name: fullname, data, extension}
+        file = { name: fullname, data, extension, parent }
 
         return res.json({
             status: true,
@@ -148,9 +143,9 @@ export const readFilesOfParentFolder = async (req, res) => {
 
         files = files.map(file => {
 
-            const {_id, fullname, updatedAt} = file
+            const { _id, fullname, updatedAt } = file
 
-            const modifiedFile = {id: _id, name: fullname, updatedAt}
+            const modifiedFile = { id: _id, name: fullname, updatedAt }
 
             return modifiedFile
         })

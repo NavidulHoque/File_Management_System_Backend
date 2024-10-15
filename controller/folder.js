@@ -43,13 +43,13 @@ export const createFolder = async (req, res) => {
 }
 
 export const deleteFolder = async (req, res) => {
-    const { id } = req.useParams
+    const { id } = req.params
 
     try {
 
         const query = { parent: id }
 
-        await Folder.findByIdAndDelete(id)
+        const deletedFolder = await Folder.findByIdAndDelete(id)
 
         await Folder.deleteMany(query)
 
@@ -57,7 +57,8 @@ export const deleteFolder = async (req, res) => {
 
         return res.json({
             status: true,
-            message: "Folder successfully deleted!"
+            message: "Folder successfully deleted!",
+            folder: {id: deletedFolder._id}
         })
     }
 
@@ -106,6 +107,38 @@ export const readFoldersOfParentFolder = async (req, res) => {
         return res.json({
             status: false,
             message: "Something went wrong loading folders, please reload the page"
+        })
+    }
+}
+
+export const readFoldersOfLoggedInUser = async (req, res) => {
+
+    const { userID } = req.params
+
+    try {
+        let folders = await Folder.find({ userID })
+
+        folders = folders.map(folder => {
+
+            const { _id, name, parent } = folder
+
+            const modifiedFolder = { id: _id, name, parent }
+
+            return modifiedFolder
+        })
+
+        return res.json({
+            status: true,
+            folders
+        })
+    }
+
+    catch (error) {
+        console.error(error)
+
+        return res.json({
+            status: false,
+            message: "Something went wrong, please reload the page"
         })
     }
 }

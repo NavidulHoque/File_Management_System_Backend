@@ -19,7 +19,6 @@ const FileSchema = new Schema({
 
     basename: {
         type: String,
-        unique: true,
         trim: true,
         required: [true, 'Basename is required'],
         minLength: [4, "File's base name should be at least 4 characters long"],
