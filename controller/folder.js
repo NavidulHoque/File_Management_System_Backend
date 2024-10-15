@@ -1,22 +1,29 @@
+import { checkFolder } from "../functions/checkFolder.js"
 import { File } from "../models/File.js"
 import { Folder } from "../models/Folder.js"
 
-export const createFolder = async () => {
+export const createFolder = async (req, res) => {
+
+    const { name, parent, userID } = req.body
 
     try {
-        const newFolder = new Folder(
-            {
-                name: req.body.name,
-                parent: req.body.parent,
-                userID: req.body.userID
-            }
-        )
+
+        const isDuplicate = await checkFolder(name, parent, userID)
+
+        if (isDuplicate) {
+            return res.json({
+                status: false,
+                message: isDuplicate,
+            })
+        }
+
+        const newFolder = new Folder({ name, parent, userID })
 
         const savedFolder = await newFolder.save()
 
-        const {_id, name, updatedAt} = savedFolder
+        const { _id, updatedAt } = savedFolder
 
-        const folder = {id: _id, name, updatedAt}
+        const folder = { id: _id, name, updatedAt }
 
         return res.json({
             status: true,
@@ -35,12 +42,12 @@ export const createFolder = async () => {
     }
 }
 
-export const deleteFolder = async () => {
+export const deleteFolder = async (req, res) => {
     const { id } = req.useParams
 
     try {
 
-        const query = {parent: id}
+        const query = { parent: id }
 
         await Folder.findByIdAndDelete(id)
 
@@ -64,9 +71,9 @@ export const deleteFolder = async () => {
     }
 }
 
-export const readFoldersOfParentFolder = async () => {
+export const readFoldersOfParentFolder = async (req, res) => {
 
-    const {id} = req.params
+    const { id } = req.params
 
     try {
         let folders = await Folder.find({ parent: id })
@@ -80,9 +87,9 @@ export const readFoldersOfParentFolder = async () => {
 
         folders = folders.map(folder => {
 
-            const {_id, name, updatedAt, parent} = folder
+            const { _id, name, updatedAt, parent } = folder
 
-            const modifiedFolder = {id: _id, name, parent, updatedAt}
+            const modifiedFolder = { id: _id, name, parent, updatedAt }
 
             return modifiedFolder
         })
@@ -91,8 +98,8 @@ export const readFoldersOfParentFolder = async () => {
             status: true,
             folders
         })
-    } 
-    
+    }
+
     catch (error) {
         console.error(error)
 

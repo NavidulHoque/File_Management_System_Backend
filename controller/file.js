@@ -1,6 +1,7 @@
+import { checkFile } from '../functions/checkFile.js';
 import { File } from '../models/File.js';
 
-export const createFile = async () => {
+export const createFile = async (req, res) => {
 
     try {
 
@@ -13,6 +14,15 @@ export const createFile = async () => {
                 userID: req.body.userID
             }
         )
+
+        const isDuplicate = await checkFile(basename)
+
+        if (isDuplicate) {
+            return res.json({
+                status: false,
+                message: isDuplicate,
+            })
+        }
 
         const savedFile = await newFile.save()
 
@@ -37,7 +47,7 @@ export const createFile = async () => {
     }
 }
 
-export const updateFile = async () => {
+export const updateFile = async (req, res) => {
 
     const { id } = req.useParams
 
@@ -69,7 +79,7 @@ export const updateFile = async () => {
     }
 }
 
-export const deleteFile = async () => {
+export const deleteFile = async (req, res) => {
 
     const { id } = req.useParams
 
@@ -94,7 +104,7 @@ export const deleteFile = async () => {
 
 }
 
-export const readFileByID = async () => {
+export const readFileByID = async (req, res) => {
 
     const { id } = req.params
 
@@ -121,7 +131,7 @@ export const readFileByID = async () => {
     }
 }
 
-export const readFilesOfParentFolder = async () => {
+export const readFilesOfParentFolder = async (req, res) => {
 
     const { folderID } = req.params
 

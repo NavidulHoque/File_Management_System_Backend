@@ -8,8 +8,7 @@ const FolderSchema = new Schema({
         type: String,
         required: [true, 'Folder name is required'],
         minLength: [4, "Folder name should be at least 4 characters long"],
-        maxLength: [10, "Folder name cannot exceed 10 characters"],
-        trim: true,
+        maxLength: [15, "Folder name cannot exceed 15 characters"],
         unique: true
     },
 
