@@ -11,7 +11,7 @@ router.put("/:id", protect, updateFile)
 router.delete("/:id", protect, deleteFile)
 
 //read files under a folder
-router.get("/files/:folderID", protect, readFilesOfParentFolder)
+router.get("/files/:folderID/:userID", protect, readFilesOfParentFolder)
 
 //read a single file
 router.get("/:id", protect, readFileByID)

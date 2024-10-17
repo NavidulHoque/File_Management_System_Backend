@@ -1,5 +1,5 @@
 import { checkFolder } from "../functions/checkFolder.js"
-import { File } from "../models/File.js"
+import deleteFolderAndChildren from "../functions/deleteFolderAndChildren.js"
 import { Folder } from "../models/Folder.js"
 
 export const createFolder = async (req, res) => {
@@ -45,48 +45,30 @@ export const createFolder = async (req, res) => {
 export const deleteFolder = async (req, res) => {
     const { id } = req.params
 
-    try {
+    await deleteFolderAndChildren(id)
 
-        const query = { parent: id }
-
-        const deletedFolder = await Folder.findByIdAndDelete(id)
-
-        await Folder.deleteMany(query)
-
-        await File.deleteMany(query)
-
-        return res.json({
-            status: true,
-            message: "Folder successfully deleted!",
-            folder: {id: deletedFolder._id}
-        })
-    }
-
-    catch (error) {
-        console.error(error)
-
-        return res.json({
-            status: false,
-            message: "Something went wrong, please try again"
-        })
-    }
+    return res.json({
+        status: true,
+        message: "Folder successfully deleted!",
+        folder: { id }
+    })
 }
 
 export const readFoldersOfParentFolder = async (req, res) => {
 
-    const { id } = req.params
+    const { id, userID } = req.params
 
     try {
-        let folders = await Folder.find({ parent: id })
+        const childFolders = await Folder.find({ parent: id, userID })
 
-        if (folders.length === 0) {
+        if (childFolders.length === 0) {
             return res.json({
                 status: false,
                 message: "empty"
             })
         }
 
-        folders = folders.map(folder => {
+        const folders = childFolders.map(folder => {
 
             const { _id, name, updatedAt, parent } = folder
 

@@ -128,20 +128,20 @@ export const readFileByID = async (req, res) => {
 
 export const readFilesOfParentFolder = async (req, res) => {
 
-    const { folderID } = req.params
+    const { folderID, userID } = req.params
 
     try {
 
-        let files = await File.find({ parent: folderID })
+        const childFiles = await File.find({ parent: folderID, userID })
 
-        if (files.length === 0) {
+        if (childFiles.length === 0) {
             return res.json({
                 status: false,
                 message: "empty"
             })
         }
 
-        files = files.map(file => {
+        const files = childFiles.map(file => {
 
             const { _id, fullname, updatedAt } = file
 
